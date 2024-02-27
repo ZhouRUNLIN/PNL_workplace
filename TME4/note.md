@@ -206,3 +206,19 @@ dumpcpu                             Same as dumpall but only tasks on cpus
 ftdump          [skip_#entries] [cpu]
                                     Dump ftrace log; -skip dumps last #entries
 ```
+
+deuxième l'adresse:l'adresse du code de module.
+
+## task 3:
+
+change code:
+
+TASK_INTERRUPTIBLE
+
+change configuration:
+
+change timeout value to 100(>60) in oops
+
+### task 4
+
+`echo -n 'file prdebug.c line 15 +p' > /sys/kernel/debug/dynamic_debug/control`

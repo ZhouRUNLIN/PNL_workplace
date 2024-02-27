@@ -330,3 +330,139 @@ Sysfs           K->U                Non(Read)        Segfile
          
 
 ```
+
+ramfs: information en ram (pas disque)
+
+pseudo file système: pas inode ... chaque fichier est une variable.
+
+avantage: api POSIX et shell program(cat, echo)
+
+inconvénient: synchronisation
+
+## utilisation pseudo file system:
+
+1. `cat .config | grep CONFIG_DEBUF_FS`
+
+CONFIG_DEBUF_FS = y
+2. `mount -t debugfs none /sys/kernel/debug`
+3. lire une variable d'un fichier
+`cat /sys/kernel/debug/sched/wakeup_granularity_ns`
+4. modifier la valeur par écriture
+`echo 300000 > /sys/kernel/debug/sched/wakeup_granularity_ns`
+
+tips: peut-être besoin root privilégiepour des fichier spécifique
+
+## procfs
+le plus ancien file system, mount in /proc
+
+but: exporter l'information de processus
+
+avantage: le plus documenté
+
+inconvénient: le concept n'est plus enforcé(pas repertoire ...)
+
+PAGE_SIZE < 4 KB
+
+seq_file api: plus complex, mais plus large de donnée exporté par une liste de buffer
+
+exemple:
+```
+static int system_enabled;
+
+static ssiez_t system_state_read(struct file *file, char __user *buf,
+                                size_t count, loff_t *ppos)
+{
+    const char * tmp = system_enabled ? "the system is enabled\n"
+                                       : "ths system is disabled\n";;
+    return simple_read_from_buffer(buf, count, ppos, tmp, strlen(tmp));
+}
+
+static const struct file_operation system_state_fops = {
+    .open = simple_opens,
+    .read = system_state_read,
+    .llseek = noop_llssek,
+}
+
+static struct proc_dir_entry * system_state_proc_dir;
+```
+
+instanciation procfs dans `/proc/my_state`
+```
+static int system_state_init()
+{
+    system_state_proc_dir = proc_create("my_state", 0, NULL,
+                                        &system_state_fops);
+    return 0;
+}
+
+static void sys
+```
+
+## sysfs
+
+sucesseur de procfs, mounted in /sys
+
+but: sauvegarder l'information à propos de subsystem,
+
+avantage: avoir une ensemble de mécanisme pour désallouer mémoire
+
+inconvénient: complex, chaque fichier représente qu'un partie de donnée, la taille n'est pas suppérieur que PAGE_SIZE
+
+### sysfs: répertoire
+struct kobject est le coeur de sysfs:
+1. chaque fépertoire corresponds à un kobject
+2. un fichier n'est pas kobject
+
+champ le plus important:
+```
+struct kobjet{
+    const char     *name,
+    struct kobject * parent,
+    struct kset    *kset,
+    struct kref    kref,
+    const struct kobj_type  *ktype;
+}
+```
+kobject attribute créé par marco:
+#define __ATTR(_name, _mode, _show, _store)
+
+## configfs
+
+## debugfs
+
+## synchronisation
+trois mécanisme
+1. appel système
+2. ioctls
+3. sockets
+
+### appel système
+traditionnel:
+1. placer numéro as dans un registre
+2. placer arguments dans registres ou/et stack
+3. trigger as interruption
+4. sauter vers as interruption handler
+5. load as table et sauter index 
+6. 
+7. 
+8. 
+
+instruction way:
+quelque atchitecture a instruction soécifique(syscall, svc, sysenter, ...)
+1. placer numéro as dans un registre
+2. placer arguments dans registres ou/et stack
+3. utiliser as instruction
+4. 
+5. exécuté comme handler
+6. retour le résultat vers user space
+
+### ioctl
+avantage: 
+1. facile implémenté
+2. avoir une interface AS
+
+inconvénient:
+nbr doit rester permanent, parce que les changer écrase application utilisateur existé.
+
+
+

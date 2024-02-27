@@ -12,7 +12,9 @@ static unsigned long irqs_sum_last;
 static void prdebug_timeout(struct timer_list *timer)
 {
 	unsigned long irqs_now = kstat_cpu(0).irqs_sum;
-
+	pr_debug("module %s func %s line %d\n", THIS_MODULE->name, __func__, __LINE__);
+	pr_debug("module %s func %s line %d\n", THIS_MODULE->name, __func__, __LINE__);
+	pr_debug("module %s func %s line %d\n", THIS_MODULE->name, __func__, __LINE__);
 	pr_debug("nr irqs %lu\n", irqs_now - irqs_sum_last);
 	irqs_sum_last = irqs_now;
 

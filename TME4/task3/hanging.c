@@ -30,7 +30,7 @@ module_init(hanging_init);
 static void __exit hanging_exit(void)
 {
 	if (hanging_thread)
-		kthread_stop(hanging_thread);
+		kthread_stop(hanging_thread);	
 	pr_warn("Hanging module unloaded\n");
 }
 module_exit(hanging_exit);
