@@ -1,1 +1,0 @@
-savedcmd_/home/siyuanchen/Documents/PNL_2024/TME4/task5/Module.symvers :=  scripts/mod/modpost        -o /home/siyuanchen/Documents/PNL_2024/TME4/task5/Module.symvers -T /home/siyuanchen/Documents/PNL_2024/TME4/task5/modules.order -i Module.symvers -e 

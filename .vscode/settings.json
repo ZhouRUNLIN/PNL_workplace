@@ -1,5 +1,7 @@
 {
     "files.associations": {
-        "func.h": "c"
+        "func.h": "c",
+        "helloioctl.C": "cpp",
+        "test.C": "cpp"
     }
 }
