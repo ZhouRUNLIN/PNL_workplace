@@ -464,5 +464,56 @@ avantage:
 inconvénient:
 nbr doit rester permanent, parce que les changer écrase application utilisateur existé.
 
+# CM 7
+
+pages are the basic unit of memory management.
+
+A page (or vitual page) is fixed-size block of contiguous virtual memory.
+
+A page frame (or physical page) is fixed-size block of contiguous physical memory.
+
+Page size depends on the architecture, some of them even support multiple sizes.
+
+***struct page***
+in include/linux/mm_types.h
+
+40 octets.
+
+## Zones
+
+Not all adresses are equal in hardware, so all frames are not treated identically.
+
+The kernel separates pages in multiple zones with different properties.
+
+The two main hardware limitations that require zones are:
+* Some hardware can only do Direct Memory Accesses (DMA) to certain addresses.
+* Some architectures have a physical address space larger that their virtual address space, which means that some frames are not permanently.
+
+noyau en haut.
+
+adresse non canonique au milieu.
+
+utilisateur en bas.
+
+## Memory API
+
+***struct page * alloc_pages***
+***void *page_address(struct page *page)***
+***unsigned long __get_free_pages(gfp_t gps_mask, unsigned int order)***
+***struct page *alloc_page(gfp_t gfp_mask)***
+***unsigned long __get_free_page(gfp_t gfp_mask)***
+***unsigned long get_zeroed_page(gfp_t gfp_mask)***
+
+## The Slab layer
+
+Allocating and freeing objects is extremely freauent, so it's a good idea to have some sort of caching mechanism.
+
+In Linux, that caching mechanism is called the *slab layer*.
+
+The slab layer allows you to create caches, each of which contain a certain type of objects, e.g, struct task_struct or struct inode. Each cache is then divided into slabs, blocks of contiguous memory that contain a certain number of instances of the object stored by this cache.
+
+## SLAB Allocator
+
+
 
 
