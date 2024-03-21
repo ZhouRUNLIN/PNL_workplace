@@ -91,7 +91,6 @@ static ssize_t taskmonitor_store(struct kobject *kobj, struct kobj_attribute *at
     if (strcmp(buf, "stop") == 0) {
         pr_info("halting monitor thread\n");
         stop_thread();
-        is_stopped = true;
     }
     else if (strcmp(buf, "start") == 0) {
         pr_info("starting monitor thread\n");
@@ -130,6 +129,7 @@ static long taskmonitor_ioctl(struct file *file, unsigned int cmd, unsigned long
                 }
                 stop_thread();
                 thread = kthread_run(monitor_fn, NULL, "my_thread");
+                is_stopped = false;
             }
             else {
                 pr_info("invalid pid\n");
@@ -174,20 +174,13 @@ module_init(hello_init);
 
 static void __exit hello_exit(void) 
 {
-    unregister_chrdev(major, "taskmonitor");
-    printk("unregister_chrdev\n");
     stop_thread();
-    printk("stop_thread\n");
     kobject_put(kernel_kobj);
-    printk("kobject_put\n");
     sysfs_remove_file(kernel_kobj, &(kernel_kobj_attribute.attr));
-    printk("sysfs_remove_file\n");
     put_pid(task_monitor->p);
-    printk("put_pid\n");
     put_task_struct(task_monitor->task);
-    printk("put_task_struct\n");
     kfree(task_monitor);
-    printk("kfree\n");
     pr_info("taskmonitor module unloaded\n");
+    unregister_chrdev(major, "taskmonitor");
 }
 module_exit(hello_exit);
