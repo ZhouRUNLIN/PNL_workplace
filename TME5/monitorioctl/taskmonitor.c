@@ -46,26 +46,25 @@ int monitor_pid(pid_t pid)
     return 0;
 }
 
-bool get_sample(struct task_monitor *task_monitor, struct task_sample *sample) {
-
-        pr_info("test");
+bool get_sample(struct task_monitor *task_monitor, struct task_sample *sample) 
+{
+    if (pid_alive(task_monitor->task) == 1) {
         sample->utime = task_monitor->task->utime;
         sample->stime = task_monitor->task->stime;
-        pr_info("%lld\n",task_monitor->task->utime);
-        pr_info("%lld\n",task_monitor->task->stime);
         return true;
+    }
+    return false;
 }
 
 int monitor_fn(void *arg)
 {
     task_monitor->task = get_pid_task(task_monitor->p, PIDTYPE_PID);  
-    struct task_sample t_sample;
     
     while(!kthread_should_stop()){
-        if(pid_alive(task_monitor->task) == 0) {
-            get_sample(task_monitor, &t_sample);
+        if(pid_alive(task_monitor->task) == 1) {
+            get_sample(task_monitor, &sample);
         } else {
-            printk("pid %d usr %llu sys %llu\n", target, task_monitor->task->utime, task_monitor->task->stime);
+            printk("pid %d usr %llu sys %llu\n", target, sample.utime, sample.stime);
         }
         ssleep(3);
     }
@@ -73,7 +72,8 @@ int monitor_fn(void *arg)
     return 0;
 }
 
-void stop_thread(void) {
+void stop_thread(void) 
+{
     if (thread && !is_stopped) {
         kthread_stop(thread);
         wake_up_process(thread);
@@ -81,11 +81,13 @@ void stop_thread(void) {
     is_stopped = true;
 }
 
-static ssize_t taskmonitor_show(struct kobject *kobj, struct kobj_attribute *attr, char *buf) {
+static ssize_t taskmonitor_show(struct kobject *kobj, struct kobj_attribute *attr, char *buf) 
+{
     return sprintf(buf, "pid %d usr %lld sys %lld\n", task_monitor->p->numbers[0].nr, task_monitor->task->utime, task_monitor->task->stime);
 }
 
-static ssize_t taskmonitor_store(struct kobject *kobj, struct kobj_attribute *attr, const char *buf, size_t count) {
+static ssize_t taskmonitor_store(struct kobject *kobj, struct kobj_attribute *attr, const char *buf, size_t count) 
+{
     if (strcmp(buf, "stop") == 0) {
         pr_info("halting monitor thread\n");
         stop_thread();
@@ -103,11 +105,11 @@ static ssize_t taskmonitor_store(struct kobject *kobj, struct kobj_attribute *at
 
 static struct kobj_attribute kernel_kobj_attribute = __ATTR_RW(taskmonitor);
 
-static long taskmonitor_ioctl(struct file *file, unsigned int cmd, unsigned long arg) {
+static long taskmonitor_ioctl(struct file *file, unsigned int cmd, unsigned long arg) 
+{
     switch (cmd) {
         case TM_GET:
-            struct task_sample t_sample;
-            get_sample(task_monitor, &t_sample);
+            get_sample(task_monitor, &sample);
             pr_info("pid %d usr %llu sys %llu\n", target, task_monitor->task->utime, task_monitor->task->stime);
             break;
         case TM_START:
@@ -120,7 +122,7 @@ static long taskmonitor_ioctl(struct file *file, unsigned int cmd, unsigned long
             stop_thread();
             break;
         case TM_PID:
-            pr_info("monitoring pid: %d\n", arg);
+            pr_info("monitoring pid: %lu\n", arg);
             if (arg > 0) {
                 target = arg;
                 if(monitor_pid(target) == -1) {
@@ -131,7 +133,6 @@ static long taskmonitor_ioctl(struct file *file, unsigned int cmd, unsigned long
             }
             else {
                 pr_info("invalid pid\n");
-
                 return -EINVAL;
             }
             break;
@@ -147,7 +148,8 @@ struct file_operations taskmonitor_fops = {
     .unlocked_ioctl = taskmonitor_ioctl,
 };  // file operations
 
-static int __init hello_init(void) {
+static int __init hello_init(void) 
+{
     if(monitor_pid(target) == -1) {
         return -1;
     }
@@ -170,14 +172,22 @@ static int __init hello_init(void) {
 }
 module_init(hello_init);
 
-static void __exit hello_exit(void) {
-    stop_thread();
-    kobject_put(kernel_kobj);
-    sysfs_remove_file(kernel_kobj, &(kernel_kobj_attribute.attr));
+static void __exit hello_exit(void) 
+{
     unregister_chrdev(major, "taskmonitor");
+    printk("unregister_chrdev\n");
+    stop_thread();
+    printk("stop_thread\n");
+    kobject_put(kernel_kobj);
+    printk("kobject_put\n");
+    sysfs_remove_file(kernel_kobj, &(kernel_kobj_attribute.attr));
+    printk("sysfs_remove_file\n");
     put_pid(task_monitor->p);
+    printk("put_pid\n");
     put_task_struct(task_monitor->task);
+    printk("put_task_struct\n");
     kfree(task_monitor);
+    printk("kfree\n");
     pr_info("taskmonitor module unloaded\n");
 }
 module_exit(hello_exit);

@@ -46,7 +46,8 @@ int monitor_pid(pid_t pid)
     return 0;
 }
 
-bool get_sample(struct task_monitor *task_monitor, struct task_sample *sample) {
+bool get_sample(struct task_monitor *task_monitor, struct task_sample *sample) 
+{
     if (pid_alive(task_monitor->task) == 0) {
         sample->utime = task_monitor->task->utime;
         sample->stime = task_monitor->task->stime;
@@ -72,18 +73,21 @@ int monitor_fn(void *arg)
     return 0;
 }
 
-void stop_thread(void) {
+void stop_thread(void) 
+{
     if (thread && !is_stopped) {
         kthread_stop(thread);
         wake_up_process(thread);
     }
 }
 
-static ssize_t taskmonitor_show(struct kobject *kobj, struct kobj_attribute *attr, char *buf) {
+static ssize_t taskmonitor_show(struct kobject *kobj, struct kobj_attribute *attr, char *buf) 
+{
     return sprintf(buf, "pid %d usr %lld sys %lld\n", task_monitor->p->numbers[0].nr, task_monitor->task->utime, task_monitor->task->stime);
 }
 
-static ssize_t taskmonitor_store(struct kobject *kobj, struct kobj_attribute *attr, const char *buf, size_t count) {
+static ssize_t taskmonitor_store(struct kobject *kobj, struct kobj_attribute *attr, const char *buf, size_t count) 
+{
     if (strcmp(buf, "stop") == 0) {
         pr_info("halting monitor thread\n");
         stop_thread();
@@ -101,7 +105,8 @@ static ssize_t taskmonitor_store(struct kobject *kobj, struct kobj_attribute *at
 
 static struct kobj_attribute kernel_kobj_attribute = __ATTR_RW(taskmonitor);
 
-static int __init hello_init(void) {
+static int __init hello_init(void) 
+{
     pr_info("monitoring pid: %d\n", target);
     if(monitor_pid(target) == -1) {
         return -1;
@@ -123,7 +128,8 @@ static int __init hello_init(void) {
 }
 module_init(hello_init);
 
-static void __exit hello_exit(void) {
+static void __exit hello_exit(void) 
+{
     stop_thread();
     printk(KERN_INFO "Taskmonitor module unloaded\n");
     kobject_put(kernel_kobj);

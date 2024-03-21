@@ -10,6 +10,5 @@ struct task_sample {
     unsigned long long utime;
     unsigned long long stime;
 };
-// static int target = 10;
-// static struct task_sample t_sample;
+static struct task_sample sample;
 #endif

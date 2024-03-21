@@ -13,24 +13,24 @@ int main(){
     }
         
     if(ioctl(file, TM_GET, 0)==-1)
-        perror("Failed to system call ioctl in HELLO request\n");
+        perror("Failed to system call ioctl in TM_GET request\n");
     
     if(ioctl(file, TM_STOP, 0)==-1)
-        perror("Failed to system call ioctl in HELLO request\n");
+        perror("Failed to system call ioctl in TM_STOP request\n");
 
     printf("Stopped\n");
-    sleep(20);
+    sleep(10);
     printf("Resumed\n");
     
     if(ioctl(file, TM_START, 0)==-1)
-        perror("Failed to system call ioctl in HELLO request\n");    
+        perror("Failed to system call ioctl in TM_START request\n");    
     
     printf("Stopped\n");
     sleep(5);
     printf("Resumed\n");
 
     if(ioctl(file, TM_PID, 2)==-1)
-        perror("Failed to system call ioctl in HELLO request\n");
+        perror("Failed to system call ioctl in TM_PID request\n");
     close(file);
 
 }
