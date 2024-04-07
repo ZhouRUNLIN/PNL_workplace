@@ -1,0 +1,12 @@
+--- /home/siyuanchen/pnl_workplace/linux-6.5.7/fs/dcache.c	2024-04-04 16:51:01.082617817 +0200
++++ /home/siyuanchen/pnl_workplace/linux-6.5.7/fs/dcache.c.orig	2024-04-04 14:47:17.389281250 +0200
+@@ -96,8 +96,7 @@
+  * information, yet avoid using a prime hash-size or similar.
+  */
+ 
+-unsigned int d_hash_shift __read_mostly;
+-EXPORT_SYMBOL_GPL(d_hash_shift);
++static unsigned int d_hash_shift __read_mostly;
+ 
+ struct hlist_bl_head *dentry_hashtable __read_mostly;
+ EXPORT_SYMBOL_GPL(dentry_hashtable);
