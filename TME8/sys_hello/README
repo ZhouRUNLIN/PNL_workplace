@@ -1,0 +1,23 @@
+modification du syscall sur kernel:
+1. sur arch/x86/entry/syscalls/syscall_64.tbl
+    chosiir un numéro de syscall et replace par le syscall que vous avez crée
+    par exemple:
+        332	common	hello			sys_hello
+2. sur include/linux/syscalls.h
+    ajouter la déclaration de la fonction
+    par exemple:
+        asmlinkage long sys_hello(void);
+3. sur kernel/sys.c
+    defnir la fonction du syscall
+    par exemple:
+        long __sys_hello(void)
+        {
+	        pr_info("Hello World!\n");
+	        return 0;
+        }
+
+        SYSCALL_DEFINE0(hello)
+        {
+	        return __sys_hello();
+        }
+4. complier le kernel, puis lancer le VM et fait le test sur kernel

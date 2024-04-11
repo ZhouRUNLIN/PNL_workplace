@@ -3,6 +3,7 @@ CC = gcc
 CFLAGS = -Wall -fPIC
 LDFLAGS = -shared
 #export LD_LIBRARY_PATH=/home/siyuanchen/Documents/PNL_2024/TME2/src/task4:$LD_LIBRARY_PATH
+#export LD_PRELOAD=./libread.so ./cron_func
 
 all: cron_func
 

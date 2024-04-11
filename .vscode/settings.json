@@ -2,6 +2,8 @@
     "files.associations": {
         "func.h": "c",
         "helloioctl.C": "cpp",
-        "test.C": "cpp"
-    }
+        "test.C": "cpp",
+        "module.h": "c"
+    },
+    "C_Cpp.errorSquiggles": "disabled"
 }
